@@ -1,11 +1,10 @@
 import time
+import os
 import numpy as np
 from pathlib import Path
 import tensorflow as tf
 
 from tqdm import tqdm
-# from sklearn.externals import joblib
-
 from utils import HParams, preprocess, iter_data
 
 global nloaded
@@ -135,11 +134,15 @@ class Model(object):
             embd_wn=True,
         )
         global params
-        model_path = Path(model_path)
-        if not list(model_path.glob('*.npy')):
+        model_path_ = Path(model_path)
+        if not model_path_.exists():
+            file_path = os.path.realpath(__file__)
+            model_path_ = Path(file_path).parent / model_path
+
+        if not list(model_path_.glob('*.npy')):
             raise Exception('empty model folder!')
 
-        params = [np.load(model_path / '{}.npy'.format(i)) for i in range(15)]
+        params = [np.load(model_path_ / '{}.npy'.format(i)) for i in range(15)]
         params[2] = np.concatenate(params[2:6], axis=1)
         params[3:6] = []
 
