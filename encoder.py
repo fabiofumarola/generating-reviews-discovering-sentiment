@@ -1,5 +1,6 @@
 import time
 import numpy as np
+from pathlib import Path
 import tensorflow as tf
 
 from tqdm import tqdm
@@ -56,10 +57,10 @@ def mlstm(inputs, c, h, M, ndim, scope='lstm', wn=False):
             gmh = tf.get_variable("gmh", [ndim], initializer=load_params)
 
     if wn:
-        wx = tf.nn.l2_normalize(wx, dim=0) * gx
-        wh = tf.nn.l2_normalize(wh, dim=0) * gh
-        wmx = tf.nn.l2_normalize(wmx, dim=0) * gmx
-        wmh = tf.nn.l2_normalize(wmh, dim=0) * gmh
+        wx = tf.nn.l2_normalize(wx, axis=0) * gx
+        wh = tf.nn.l2_normalize(wh, axis=0) * gh
+        wmx = tf.nn.l2_normalize(wmx, axis=0) * gmx
+        wmh = tf.nn.l2_normalize(wmh, axis=0) * gmh
 
     cs = []
     for idx, x in enumerate(inputs):
@@ -117,7 +118,8 @@ def batch_pad(xs, nbatch, nsteps):
 
 class Model(object):
 
-    def __init__(self, nbatch=128, nsteps=64):
+    def __init__(self, nbatch=128, nsteps=64, model_path='./model'):
+
         global hps
         hps = HParams(
             load_path='model_params/params.jl',
@@ -133,7 +135,11 @@ class Model(object):
             embd_wn=True,
         )
         global params
-        params = [np.load('model/%d.npy'%i) for i in range(15)]
+        model_path = Path(model_path)
+        if not list(model_path.glob('*.npy')):
+            raise Exception('empty model folder!')
+
+        params = [np.load(model_path / '{}.npy'.format(i)) for i in range(15)]
         params[2] = np.concatenate(params[2:6], axis=1)
         params[3:6] = []
 
