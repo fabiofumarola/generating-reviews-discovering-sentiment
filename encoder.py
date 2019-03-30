@@ -4,7 +4,7 @@ from pathlib import Path
 import tensorflow as tf
 
 from tqdm import tqdm
-from sklearn.externals import joblib
+# from sklearn.externals import joblib
 
 from utils import HParams, preprocess, iter_data
 
@@ -213,7 +213,7 @@ class Model(object):
 
 if __name__ == '__main__':
     mdl = Model()
-    text = ['demo!']
+    text = ['this is a good demo!']
     text_features = mdl.transform(text)
-    print(text_features.shape)
-    print('sentiment', text_features[:, 2388])
+    for t,s in zip(text, text_features[:, 2388]):
+        print('{} -> sentiment {:.2f}'.format(t, s))
