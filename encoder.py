@@ -216,3 +216,4 @@ if __name__ == '__main__':
     text = ['demo!']
     text_features = mdl.transform(text)
     print(text_features.shape)
+    print('sentiment', text_features[:, 2388])
